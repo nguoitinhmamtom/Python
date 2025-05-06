@@ -44,6 +44,18 @@ df_scores.groupby('category').agg(total = ('score','sum')).reset_index()
 # Create a new column 'Shooting Accuracy' as ['Shots on target'] / (['Shots on target'] + ['Shots off target']) * 100
 # Sort and display teams, goals and shooting accuracy in the descending order of 'Shooting Accuracy'
 
+import pandas as pd
+df_euro = pd.read_csv('/content/drive/MyDrive/Dataset/euro_12.csv')
+df_euro1 = df_euro[['Team', 'Goals', 'Yellow Cards', 'Red Cards', 'Passes', 'Players Used']]
+df_euro1
+df_euro1.sort_values('Players Used')
+df_euro1.sort_values(['Yellow Cards','Red Cards'])
+df_euro1['Yellow Cards'].mean()
+df_euro2 = df_euro1[df_euro1['Goals']>9]
+df_euro2.sort_values('Passes', ascending = False)
+df_euro['Shooting Accuracy'] = df_euro['Shots on target'] / (df_euro['Shots on target'] + df_euro['Shots off target']) * 100
+df_euro.sort_values('Shooting Accuracy', ascending = False)[['Team','Goals','Shooting Accuracy']]
+
 # Exercise 3:
 # Read file users.txt into a DataFrame and check information by using info().
 # From the DataFrame:
