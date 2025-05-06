@@ -61,7 +61,20 @@ df_euro.sort_values('Shooting Accuracy', ascending = False)[['Team','Goals','Sho
 # From the DataFrame:
 # Calculate mean of ages for each occupation
 # Calculate male ratio (%) of each occupation
-# Sort male ratios in descending order
+# Sort male ratios in descending order - ko có column order
 # Find and display min and max ages of each occupation
 # Calculate and display mean of ages of male and female for each occupation
 # Count and display occupations by gender (male and female)
+
+df_users.info()
+df_users.groupby('occupation')['age'].mean().reset_index()
+df_users.groupby('occupation')['age'].agg(mean = 'mean').reset_index()
+df_users.groupby('occupation').agg(mean = ('age', 'mean')).reset_index()
+total_users_per_occupation = df_users.groupby('occupation')['gender'].count().reset_index() # tạo dataframe tính số male trong từng occupation
+male_users_per_occupation = df_users[df_users['gender']=='M'][['occupation','gender']] # tạo dataframe lấy mỗi male
+male_users_per_occupation = male_users_per_occupation.groupby('occupation')['gender'].count().reset_index() # tạo dataframe tính số male trong từng occupation
+male_users_per_occupation['ratio'] = (male_users_per_occupation['gender']/total_users_per_occupation['gender'])*100
+min_age = df_users.groupby('occupation')['age'].min().reset_index()
+max_age = df_users.groupby('occupation')['age'].max().reset_index()
+mean_of_ages = df_users.groupby(['occupation','gender'])['age'].mean().reset_index()
+df_users.groupby('gender')['occupation'].count().reset_index()
