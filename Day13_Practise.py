@@ -1,6 +1,11 @@
 # 1. Calculate Average Rating and Number of Reviews by Product Categories
 # Hint: Group the data by product categories. Use aggregation functions like mean() for the average rating and count() for the number of reviews.
 
+df1 = pd.merge(df_items[['order_id','product_id']],df_products[['product_category_name','product_id']],how='left',on='product_id')
+df2 = pd.merge(df_items[['order_id']], df_reviews[['review_id','review_score','order_id']], how = 'left', on = 'order_id')
+df = pd.merge(df1,df2,how='left',on='order_id')
+df.groupby('product_category_name').agg(Average_Rating = ('review_score','mean'), Number_of_Reviews = ('review_id','count'))
+
 # 2. Number of Orders, and Sales by Product Categories
 # Hint: Group by product categories and calculate the total number of orders, and total sales (payment_value).
 
