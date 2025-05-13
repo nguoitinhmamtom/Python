@@ -52,6 +52,12 @@ df_orders.groupby('time_to_order_category').agg(number_of_oders = ('order_id','c
 # 6. Total Number of Orders, and Sales by Day of the Week
 # Hint: Extract the day of the week from the order_purchase_timestamp and group by this day. You can use .dt.day_name() or .dt.weekday to get the day name.
 
+df = pd.merge(df_payments[['order_id','payment_value']],df_orders[['order_id','order_purchase_timestamp']],how='left',on='order_id')
+df['order_purchase_timestamp'] = df['order_purchase_timestamp'].dt.day_name()
+# cách lấy ngày trong tuần theo số .dt.dayofweek, .dt.weekday
+# cách lấy ngày trong tuần theo chữ .dt.day_name()
+df.groupby('order_purchase_timestamp').agg(number_of_order = ('order_id','count'), total_sales = ('payment_value','sum')).reset_index()
+
 # 7. Average Rating Based on the Difference Between the Estimated and Actual Delivery Dates
 # Hint:
 # Calculate the difference between the order_estimated_delivery_date and the order_delivered_customer_date in terms of days.
@@ -65,3 +71,23 @@ df_orders.groupby('time_to_order_category').agg(number_of_oders = ('order_id','c
 # Make sure to check the datatype of the columns you are working with, especially dates. You may need to use pd.to_datetime() for conversion.
 # For categorizing timestamps or dates, use .dt to extract the components such as day, hour, or month.
 # When performing aggregations, use groupby() to group by the relevant column and apply aggregation functions such as mean(), sum(), count(), or nunique().
+
+lst = ['order_delivered_customer_date','order_estimated_delivery_date']
+for i in lst:
+  df_orders[i]=df_orders[i].str.split().str[0]
+for i in lst:
+  df_orders[i]=pd.to_datetime(df_orders[i])
+df_orders['diff'] = df_orders['order_estimated_delivery_date'] - df_orders['order_delivered_customer_date']
+df_orders['diff'].dt.days
+def delivery_status_category(x):
+  if x < pd.Timedelta(-10, unit = 'days'):
+    return 'late over 10 days'
+  if pd.Timedelta(-10, unit = 'days')<= x < pd.Timedelta(-5, unit = 'days'):
+    return 'late from 5 days to 10 days'
+  if pd.Timedelta(0, unit = 'days') <= x:
+    return 'on time delivery' 
+  if pd.Timedelta(-5, unit = 'days') <= x < pd.Timedelta(0, unit = 'days'):
+    return 'late under 5 days'
+df_orders['delivery_status_category']=df_orders['diff'].apply(delivery_status_category)
+df = pd.merge(df_reviews[['order_id','review_score']],df_orders[['order_id','delivery_status_category']])
+df.groupby('delivery_status_category').agg(average_rating = ('review_score','mean')).reset_index()
