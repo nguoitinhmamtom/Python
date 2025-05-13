@@ -16,8 +16,15 @@ df1.groupby('product_category_name').agg(Number_of_Orders = ('order_id','count')
 # 3. Which States Have the Highest Number of Customers?
 # Hint: Group the data by the state and count the number of distinct customers. You can use groupby() and nunique() to count unique customers by state.
 
+df = df_customers.groupby('customer_state')['customer_id'].nunique() # đếm số lượng khách hàng khác nhau (distinct customers)
+df.sort_values(ascending = False).reset_index()
+
 # 4. Top 5 Customers Generating the Most Revenue
 # Hint: Group by customer and sum the total revenue (payment_value). Sort the results in descending order and select the top 5.
+
+df = pd.merge(df_orders[['order_id','customer_id']],df_payments[['order_id','payment_value']],how='left',on='order_id')
+df = df.groupby('customer_id').agg(Total_revenue = ('payment_value','sum')).reset_index()
+df.sort_values('Total_revenue',ascending = False).head(5)
 
 # 5. Number of Orders for Each Category ("Morning", "Afternoon", "Evening", "Night")
 # Categorize purchase time based on the order_purchase_timestamp hour:
@@ -26,6 +33,21 @@ df1.groupby('product_category_name').agg(Number_of_Orders = ('order_id','count')
 # Evening for hours between 5 PM and 9 PM.
 # Night for hours between 9 PM and 5 AM.
 # Hint: Categorize the purchase time based on the order_purchase_timestamp hour. Use the .dt accessor to extract the hour, then categorize the hour into "Morning", "Afternoon", "Evening", or "Night".
+
+df_orders['order_purchase_timestamp'] = pd.to_datetime(df_orders['order_purchase_timestamp']) 
+df_orders['time_to_order']=df_orders['order_purchase_timestamp'].dt.hour
+def time_to_order(x):
+  if 5 <= x < 12:
+     return('Morning')
+  if 13 <= x < 17:
+     return('Afternoon')
+  if 17 <= x < 21:
+     return('Evening')
+  else:
+     return('Night')
+df_orders['time_to_order_category'] = df_orders['time_to_order'].apply(time_to_order)
+# df_orders['time_to_order_category'] = df_orders['time_to_order'].apply(lambda x: 'Morning' if x>5 else('Afternoon' if x<17 else('Evening' if x < 21 else 'Night')))
+df_orders.groupby('time_to_order_category').agg(number_of_oders = ('order_id','count')).reset_index()
 
 # 6. Total Number of Orders, and Sales by Day of the Week
 # Hint: Extract the day of the week from the order_purchase_timestamp and group by this day. You can use .dt.day_name() or .dt.weekday to get the day name.
