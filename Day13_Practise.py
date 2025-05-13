@@ -9,6 +9,10 @@ df.groupby('product_category_name').agg(Average_Rating = ('review_score','mean')
 # 2. Number of Orders, and Sales by Product Categories
 # Hint: Group by product categories and calculate the total number of orders, and total sales (payment_value).
 
+df1 = pd.merge(df_products[['product_id','product_category_name']],df_items[['order_id','product_id']],how = 'left', on = 'product_id')
+df1 = pd.merge(df1[['order_id','product_category_name']],df_payments[['order_id','payment_value']],how='left',on='order_id')
+df1.groupby('product_category_name').agg(Number_of_Orders = ('order_id','count'), Number_of_Sales = ('payment_value','sum'))
+
 # 3. Which States Have the Highest Number of Customers?
 # Hint: Group the data by the state and count the number of distinct customers. You can use groupby() and nunique() to count unique customers by state.
 
