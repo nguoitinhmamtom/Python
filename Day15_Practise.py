@@ -2,16 +2,21 @@
 # Read the file messy_data (source: AlextheAnalyst)
 # List the issues you notice in the dataset
 # Hint: Look for missing data, inconsistent formats, special characters, or incorrect data types.
-"""
-Cột CustomerID chuyển từ int => str
+
+"""Cột CustomerID chuyển từ int => str
 Cột Last_Name chứa giá trị  NaN => thay thế bằng giá trị Unknow
 Cột Phone_Number chứa giá trị lộn xộn, N/a (thiếu từ đầu) => chỉnh lại chính tả và typos
 Cột Address chứa giá trị N/a (thiếu từ đầu) => không cần sửa
 Cột Paying Customer chứa giá trị lộn xộn, N/a, NaN  => chỉnh lại chính tả và xử lý row NaN
 Cột Do_Not_Contact chứa giá trị lộn xộn  => chỉnh lại chính tả """
+
 # Remove non-alphabetic characters from First_Name and Last_Name
 # Example: If the name is /Alex.1, it should be converted to Alex.
 # Hint: Use string methods like .str.replace() or regular expressions (regex) to remove unwanted characters.
+
+df_messy['First_Name'] = df_messy['First_Name'].str.replace(r'[^a-zA-Z]', '', regex=True)
+df_messy['Last_Name'] = df_messy['Last_Name'].str.replace(r'[^a-zA-Z]', '', regex=True)
+df_messy['Last_Name'] = df_messy['Last_Name'].fillna('Unknow')
 
 # Format phone numbers to the format nnn-nnn-nnnn
 # Hint:
