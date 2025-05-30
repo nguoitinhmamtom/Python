@@ -29,9 +29,20 @@ df_messy['Phone_Number'] = df_messy['Phone_Number'].str.replace(r'(\d{3})(\d{3})
 # Zip_Code = 18503
 # State = 'Pennsylvania'.  If any part is missing, assign None.
 # Hint: Use .str.extract() with regex or .str.split() to separate the address into components.
+pattern = r'^(.*?)(?:,\s*([^,]+?)\s*(?:,\s*(\d{5})\s*)?)?$'
+extracted = df_messy['Address'].str.extract(pattern)
+df_messy['Street_Address'] = extracted[0]
+df_messy['State'] = extracted[1].replace('', None)
+df_messy['Zip_Code'] = extracted[2].replace('', None)
 
 # Standardize the Do_Not_Contact column to only have two values: Y or N
 # Hint: You can use .map() or .replace() to convert any variations (e.g., yes, no, y, n) to a consistent format.
+def clean_text(x):
+  if x in ['No']:
+    return 'N'
+  elif x in ['Yes']:
+    return 'Y'
+df_messy['Do_Not_Contact']=df_messy['Do_Not_Contact'].apply(clean_text)
 
 # Replace all (NaN,N/A, N/a,nan)values with Unknown
 # Drop duplicate rows:
