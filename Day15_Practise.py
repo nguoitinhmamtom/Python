@@ -48,3 +48,6 @@ df_messy['Do_Not_Contact']=df_messy['Do_Not_Contact'].apply(clean_text)
 # Drop duplicate rows:
 # Remove rows where all column values are identical, leaving only unique rows.
 # Hint: Use .drop_duplicates() to perform this operation.
+missing_values = ['N/A', 'N/a', 'nan', 'NaN']
+df_messy.replace(missing_values, 'Unknown', inplace=True)
+df_messy.drop_duplicates()
